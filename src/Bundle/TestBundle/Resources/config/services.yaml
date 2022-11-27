@@ -1,0 +1,17 @@
+services:
+
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  messenger.bus.exchange.handler:
+    class: App\Bundle\TestBundle\Messenger\Handler\ExchangeHandler
+    tags:
+      - messenger.message_handler
+    arguments:
+      [ '@calculate', '@serializer' ]
+
+  calculate:
+    class: App\Bundle\TestBundle\Services\CalculateService
+    arguments:
+      [ '@?' ]

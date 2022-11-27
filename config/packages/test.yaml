@@ -1,0 +1,12 @@
+test:
+  rates_provider:
+    url: https://developers.paysera.com/tasks/api/currency-exchange-rates
+    mapping: '[rates]'
+    auth:
+      access_key: 'key'
+    currency: 'BYN'
+  bins_provider:
+    url: https://lookup.binlist.net
+    mapping: '[country][alpha2]'
+    auth:
+      access_key: 'key'

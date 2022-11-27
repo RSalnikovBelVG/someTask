@@ -1,0 +1,14 @@
+Possible config:
+
+    test:
+        rates_provider:
+            url: https://developers.paysera.com/tasks/api/currency-exchange-rates
+            mapping: '[rates]'
+            auth:
+                access_key: 'key'
+            currency: 'EUR'
+        bins_provider:
+            url: https://lookup.binlist.net
+            mapping: '[country][alpha2]'
+            auth:
+                access_key: 'key'`
