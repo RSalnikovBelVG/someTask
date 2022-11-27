@@ -26,11 +26,6 @@ class CalculateService
         return \in_array($country, self::COUNTRIES);
     }
 
-    public function calculateRatesByInput(Input $input)
-    {
-
-    }
-
     /**
      * @return array
      */

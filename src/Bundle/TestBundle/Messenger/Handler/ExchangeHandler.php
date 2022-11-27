@@ -76,6 +76,6 @@ class ExchangeHandler
 
     private function calcEURates($amount, bool $isEU = false)
     {
-        return round($amount * ($isEU ? 0.01 : 0.02), 2);
+        return ceil(($amount * ($isEU ? 0.01 : 0.02)) * 100) / 100;
     }
 }
