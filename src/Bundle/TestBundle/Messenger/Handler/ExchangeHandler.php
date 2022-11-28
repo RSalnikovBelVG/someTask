@@ -76,6 +76,6 @@ class ExchangeHandler
 
     private function calcEURates($amount, bool $isEU = false)
     {
-        return ceil(($amount * ($isEU ? 0.01 : 0.02)) * 100) / 100;
+        return bcdiv((string)ceil((float)bcmul(bcmul($isEU ? '0.01' : '0.02', (string)$amount, 3), '100', 3)), '100', 2);
     }
 }
