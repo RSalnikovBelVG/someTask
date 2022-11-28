@@ -12,3 +12,7 @@ Possible config:
             mapping: '[country][alpha2]'
             auth:
                 access_key: 'key'`
+
+Run:
+
+    php bin/console calculate './input.txt'
