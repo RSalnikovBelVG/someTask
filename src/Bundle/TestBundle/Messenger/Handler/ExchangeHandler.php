@@ -52,6 +52,7 @@ class ExchangeHandler
 
             $input = $serializer->denormalize($json, Input::class, 'json');
 
+
             $binProvider = $calcParams['bins_provider'];
             $country = $this->getCountry($binProvider['url'] . '/' . $input->getBin(), $binProvider['auth'], $binProvider['mapping']);
             if (!$country) throw new NoSuchPropertyException();
@@ -63,7 +64,10 @@ class ExchangeHandler
             $currency = $input->getCurrency();
             $amount = $input->getAmount();
             $isEU = CalculateService::isCountryEU($country);
-            if ($currency !== $ratesProvider['currency'] || array_search($currency, $rates, true) > 0) $amount /= $rates[$currency];
+
+            if ($currency !== $ratesProvider['currency'] || array_search($currency, $rates, true) > 0){
+                $amount /= $rates[$currency] ?? 0;
+            }
 
             $rateArr[$key] = $this->calcEURates($amount, $isEU);
         }
