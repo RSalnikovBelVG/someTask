@@ -1,0 +1,679 @@
+Escaped mutants:
+================
+
+1) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:34    [M] MethodCallRemoval
+
+--- Original
++++ New
+@@ @@
+     public function __construct(CalculateService $calculateService)
+     {
+         $this->calculateService = $calculateService;
+-        $this->setBinService(new BinService());
++        
+         $this->setRatesService(new RatesService());
+     }
+     public function __invoke(ExchangeMessage $arg)
+
+
+2) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:35    [M] MethodCallRemoval
+
+--- Original
++++ New
+@@ @@
+     {
+         $this->calculateService = $calculateService;
+         $this->setBinService(new BinService());
+-        $this->setRatesService(new RatesService());
++        
+     }
+     public function __invoke(ExchangeMessage $arg)
+     {
+
+
+3) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:41    [M] LogicalAnd
+
+--- Original
++++ New
+@@ @@
+     public function __invoke(ExchangeMessage $arg)
+     {
+         $filename = $arg->getFileName();
+-        if (!file_exists($filename) && !is_readable($filename)) {
++        if (!file_exists($filename) || !is_readable($filename)) {
+             throw new FileNotFoundException();
+         }
+         $file = file_get_contents($filename);
+
+
+4) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:44    [M] ArrayItemRemoval
+
+--- Original
++++ New
+@@ @@
+             throw new FileNotFoundException();
+         }
+         $file = file_get_contents($filename);
+-        $serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
++        $serializer = new Serializer([new ObjectNormalizer()], []);
+         $array = explode(PHP_EOL, $file);
+         $calcParams = $this->calculateService->getParams();
+         $rateArr = [];
+
+
+5) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:50    [M] ConcatOperandRemoval
+
+--- Original
++++ New
+@@ @@
+         $rateArr = [];
+         foreach ($array as $key => $val) {
+             if (!$this->json_validator($val) || json_last_error() > JSON_ERROR_NONE) {
+-                throw new JsonException('JSON: ' . json_last_error_msg());
++                throw new JsonException('JSON: ');
+             }
+             $json = json_decode($val);
+             $input = $serializer->denormalize($json, Input::class, 'json');
+
+
+6) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:50    [M] Throw_
+
+--- Original
++++ New
+@@ @@
+         $rateArr = [];
+         foreach ($array as $key => $val) {
+             if (!$this->json_validator($val) || json_last_error() > JSON_ERROR_NONE) {
+-                throw new JsonException('JSON: ' . json_last_error_msg());
++                new JsonException('JSON: ' . json_last_error_msg());
+             }
+             $json = json_decode($val);
+             $input = $serializer->denormalize($json, Input::class, 'json');
+
+
+7) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:50    [M] ConcatOperandRemoval
+
+--- Original
++++ New
+@@ @@
+         $rateArr = [];
+         foreach ($array as $key => $val) {
+             if (!$this->json_validator($val) || json_last_error() > JSON_ERROR_NONE) {
+-                throw new JsonException('JSON: ' . json_last_error_msg());
++                throw new JsonException(json_last_error_msg());
+             }
+             $json = json_decode($val);
+             $input = $serializer->denormalize($json, Input::class, 'json');
+
+
+8) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:50    [M] Concat
+
+--- Original
++++ New
+@@ @@
+         $rateArr = [];
+         foreach ($array as $key => $val) {
+             if (!$this->json_validator($val) || json_last_error() > JSON_ERROR_NONE) {
+-                throw new JsonException('JSON: ' . json_last_error_msg());
++                throw new JsonException(json_last_error_msg() . 'JSON: ');
+             }
+             $json = json_decode($val);
+             $input = $serializer->denormalize($json, Input::class, 'json');
+
+
+9) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:50    [M] LogicalOr
+
+--- Original
++++ New
+@@ @@
+         $calcParams = $this->calculateService->getParams();
+         $rateArr = [];
+         foreach ($array as $key => $val) {
+-            if (!$this->json_validator($val) || json_last_error() > JSON_ERROR_NONE) {
++            if (!$this->json_validator($val) && json_last_error() > JSON_ERROR_NONE) {
+                 throw new JsonException('JSON: ' . json_last_error_msg());
+             }
+             $json = json_decode($val);
+
+
+10) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:56    [M] Concat
+
+--- Original
++++ New
+@@ @@
+             $json = json_decode($val);
+             $input = $serializer->denormalize($json, Input::class, 'json');
+             $binProvider = $calcParams['bins_provider'];
+-            $country = $this->getCountry($binProvider['url'] . '/' . $input->getBin(), $binProvider['auth'], $binProvider['mapping']);
++            $country = $this->getCountry('/' . $binProvider['url'] . $input->getBin(), $binProvider['auth'], $binProvider['mapping']);
+             if (!$country) {
+                 throw new NoSuchPropertyException();
+             }
+
+
+11) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:56    [M] ConcatOperandRemoval
+
+--- Original
++++ New
+@@ @@
+             $json = json_decode($val);
+             $input = $serializer->denormalize($json, Input::class, 'json');
+             $binProvider = $calcParams['bins_provider'];
+-            $country = $this->getCountry($binProvider['url'] . '/' . $input->getBin(), $binProvider['auth'], $binProvider['mapping']);
++            $country = $this->getCountry('/' . $input->getBin(), $binProvider['auth'], $binProvider['mapping']);
+             if (!$country) {
+                 throw new NoSuchPropertyException();
+             }
+
+
+12) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:56    [M] ConcatOperandRemoval
+
+--- Original
++++ New
+@@ @@
+             $json = json_decode($val);
+             $input = $serializer->denormalize($json, Input::class, 'json');
+             $binProvider = $calcParams['bins_provider'];
+-            $country = $this->getCountry($binProvider['url'] . '/' . $input->getBin(), $binProvider['auth'], $binProvider['mapping']);
++            $country = $this->getCountry($binProvider['url'] . $input->getBin(), $binProvider['auth'], $binProvider['mapping']);
+             if (!$country) {
+                 throw new NoSuchPropertyException();
+             }
+
+
+13) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:56    [M] Concat
+
+--- Original
++++ New
+@@ @@
+             $json = json_decode($val);
+             $input = $serializer->denormalize($json, Input::class, 'json');
+             $binProvider = $calcParams['bins_provider'];
+-            $country = $this->getCountry($binProvider['url'] . '/' . $input->getBin(), $binProvider['auth'], $binProvider['mapping']);
++            $country = $this->getCountry($binProvider['url'] . $input->getBin() . '/', $binProvider['auth'], $binProvider['mapping']);
+             if (!$country) {
+                 throw new NoSuchPropertyException();
+             }
+
+
+14) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:56    [M] ConcatOperandRemoval
+
+--- Original
++++ New
+@@ @@
+             $json = json_decode($val);
+             $input = $serializer->denormalize($json, Input::class, 'json');
+             $binProvider = $calcParams['bins_provider'];
+-            $country = $this->getCountry($binProvider['url'] . '/' . $input->getBin(), $binProvider['auth'], $binProvider['mapping']);
++            $country = $this->getCountry($binProvider['url'] . '/', $binProvider['auth'], $binProvider['mapping']);
+             if (!$country) {
+                 throw new NoSuchPropertyException();
+             }
+
+
+15) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:57    [M] Throw_
+
+--- Original
++++ New
+@@ @@
+             $binProvider = $calcParams['bins_provider'];
+             $country = $this->getCountry($binProvider['url'] . '/' . $input->getBin(), $binProvider['auth'], $binProvider['mapping']);
+             if (!$country) {
+-                throw new NoSuchPropertyException();
++                new NoSuchPropertyException();
+             }
+             $ratesProvider = $calcParams['rates_provider'];
+             $rates = $this->getRates($ratesProvider['url'], $ratesProvider['auth'], $ratesProvider['mapping']);
+
+
+16) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:66    [M] GreaterThan
+
+--- Original
++++ New
+@@ @@
+             $currency = $input->getCurrency();
+             $amount = $input->getAmount();
+             $isEU = CalculateService::isCountryEU($country);
+-            if ($currency !== $ratesProvider['currency'] || array_search($currency, $rates, true) > 0) {
++            if ($currency !== $ratesProvider['currency'] || array_search($currency, $rates, true) >= 0) {
+                 $amount /= $rates[$currency];
+             }
+             $rateArr[$key] = $this->calcEURates($amount, $isEU);
+
+
+17) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:66    [M] GreaterThanNegotiation
+
+--- Original
++++ New
+@@ @@
+             $currency = $input->getCurrency();
+             $amount = $input->getAmount();
+             $isEU = CalculateService::isCountryEU($country);
+-            if ($currency !== $ratesProvider['currency'] || array_search($currency, $rates, true) > 0) {
++            if ($currency !== $ratesProvider['currency'] || array_search($currency, $rates, true) <= 0) {
+                 $amount /= $rates[$currency];
+             }
+             $rateArr[$key] = $this->calcEURates($amount, $isEU);
+
+
+18) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:77    [M] LogicalAnd
+
+--- Original
++++ New
+@@ @@
+     private function json_validator($data)
+     {
+         if (!empty($data)) {
+-            return is_string($data) && is_array(json_decode($data, true));
++            return is_string($data) || is_array(json_decode($data, true));
+         }
+         return false;
+     }
+
+
+19) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:85    [M] MethodCallRemoval
+
+--- Original
++++ New
+@@ @@
+     private function getCountry($url, $auth, $mapping)
+     {
+         $binService = $this->getBinService();
+-        $binService->setUrl($url);
++        
+         $binService->setAuth($auth);
+         return (new PropertyAccessor())->getValue($binService->getData(), $mapping);
+     }
+
+
+20) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:86    [M] MethodCallRemoval
+
+--- Original
++++ New
+@@ @@
+     {
+         $binService = $this->getBinService();
+         $binService->setUrl($url);
+-        $binService->setAuth($auth);
++        
+         return (new PropertyAccessor())->getValue($binService->getData(), $mapping);
+     }
+     /**
+
+
+21) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:94    [M] PublicVisibility
+
+--- Original
++++ New
+@@ @@
+     /**
+      * @return mixed
+      */
+-    public function getBinService()
++    protected function getBinService()
+     {
+         return $this->binService;
+     }
+
+
+22) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:110    [M] MethodCallRemoval
+
+--- Original
++++ New
+@@ @@
+     private function getRates($url, $auth, $mapping)
+     {
+         $ratesService = $this->getRatesService();
+-        $ratesService->setUrl($url);
++        
+         $ratesService->setAuth($auth);
+         return (new PropertyAccessor())->getValue($ratesService->getData(), $mapping);
+     }
+
+
+23) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:111    [M] MethodCallRemoval
+
+--- Original
++++ New
+@@ @@
+     {
+         $ratesService = $this->getRatesService();
+         $ratesService->setUrl($url);
+-        $ratesService->setAuth($auth);
++        
+         return (new PropertyAccessor())->getValue($ratesService->getData(), $mapping);
+     }
+     /**
+
+
+24) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:119    [M] PublicVisibility
+
+--- Original
++++ New
+@@ @@
+     /**
+      * @return mixed
+      */
+-    public function getRatesService()
++    protected function getRatesService()
+     {
+         return $this->ratesService;
+     }
+
+
+25) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:132    [M] FalseValue
+
+--- Original
++++ New
+@@ @@
+     {
+         $this->ratesService = $ratesService;
+     }
+-    private function calcEURates($amount, bool $isEU = false)
++    private function calcEURates($amount, bool $isEU = true)
+     {
+         return bcdiv((string) ceil((float) bcmul(bcmul($isEU ? '0.01' : '0.02', (string) $amount, 3), '100', 3)), '100', 2);
+     }
+ }
+
+
+26) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:134    [M] CastFloat
+
+--- Original
++++ New
+@@ @@
+     }
+     private function calcEURates($amount, bool $isEU = false)
+     {
+-        return bcdiv((string) ceil((float) bcmul(bcmul($isEU ? '0.01' : '0.02', (string) $amount, 3), '100', 3)), '100', 2);
++        return bcdiv((string) ceil(bcmul(bcmul($isEU ? '0.01' : '0.02', (string) $amount, 3), '100', 3)), '100', 2);
+     }
+ }
+
+
+27) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:134    [M] BCMath
+
+--- Original
++++ New
+@@ @@
+     }
+     private function calcEURates($amount, bool $isEU = false)
+     {
+-        return bcdiv((string) ceil((float) bcmul(bcmul($isEU ? '0.01' : '0.02', (string) $amount, 3), '100', 3)), '100', 2);
++        return (string) ((string) ceil((float) bcmul(bcmul($isEU ? '0.01' : '0.02', (string) $amount, 3), '100', 3)) / '100');
+     }
+ }
+
+
+28) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:134    [M] IncrementInteger
+
+--- Original
++++ New
+@@ @@
+     }
+     private function calcEURates($amount, bool $isEU = false)
+     {
+-        return bcdiv((string) ceil((float) bcmul(bcmul($isEU ? '0.01' : '0.02', (string) $amount, 3), '100', 3)), '100', 2);
++        return bcdiv((string) ceil((float) bcmul(bcmul($isEU ? '0.01' : '0.02', (string) $amount, 3), '100', 3)), '100', 3);
+     }
+ }
+
+
+29) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:134    [M] RoundingFamily
+
+--- Original
++++ New
+@@ @@
+     }
+     private function calcEURates($amount, bool $isEU = false)
+     {
+-        return bcdiv((string) ceil((float) bcmul(bcmul($isEU ? '0.01' : '0.02', (string) $amount, 3), '100', 3)), '100', 2);
++        return bcdiv((string) round((float) bcmul(bcmul($isEU ? '0.01' : '0.02', (string) $amount, 3), '100', 3)), '100', 2);
+     }
+ }
+
+
+30) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:134    [M] BCMath
+
+--- Original
++++ New
+@@ @@
+     }
+     private function calcEURates($amount, bool $isEU = false)
+     {
+-        return bcdiv((string) ceil((float) bcmul(bcmul($isEU ? '0.01' : '0.02', (string) $amount, 3), '100', 3)), '100', 2);
++        return bcdiv((string) ceil((float) bcmul((string) (($isEU ? '0.01' : '0.02') * (string) $amount), '100', 3)), '100', 2);
+     }
+ }
+
+
+31) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:134    [M] BCMath
+
+--- Original
++++ New
+@@ @@
+     }
+     private function calcEURates($amount, bool $isEU = false)
+     {
+-        return bcdiv((string) ceil((float) bcmul(bcmul($isEU ? '0.01' : '0.02', (string) $amount, 3), '100', 3)), '100', 2);
++        return bcdiv((string) ceil((float) (string) (bcmul($isEU ? '0.01' : '0.02', (string) $amount, 3) * '100')), '100', 2);
+     }
+ }
+
+
+32) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:134    [M] IncrementInteger
+
+--- Original
++++ New
+@@ @@
+     }
+     private function calcEURates($amount, bool $isEU = false)
+     {
+-        return bcdiv((string) ceil((float) bcmul(bcmul($isEU ? '0.01' : '0.02', (string) $amount, 3), '100', 3)), '100', 2);
++        return bcdiv((string) ceil((float) bcmul(bcmul($isEU ? '0.01' : '0.02', (string) $amount, 3), '100', 4)), '100', 2);
+     }
+ }
+
+
+33) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:134    [M] DecrementInteger
+
+--- Original
++++ New
+@@ @@
+     }
+     private function calcEURates($amount, bool $isEU = false)
+     {
+-        return bcdiv((string) ceil((float) bcmul(bcmul($isEU ? '0.01' : '0.02', (string) $amount, 3), '100', 3)), '100', 2);
++        return bcdiv((string) ceil((float) bcmul(bcmul($isEU ? '0.01' : '0.02', (string) $amount, 3), '100', 2)), '100', 2);
+     }
+ }
+
+
+34) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:134    [M] IncrementInteger
+
+--- Original
++++ New
+@@ @@
+     }
+     private function calcEURates($amount, bool $isEU = false)
+     {
+-        return bcdiv((string) ceil((float) bcmul(bcmul($isEU ? '0.01' : '0.02', (string) $amount, 3), '100', 3)), '100', 2);
++        return bcdiv((string) ceil((float) bcmul(bcmul($isEU ? '0.01' : '0.02', (string) $amount, 4), '100', 3)), '100', 2);
+     }
+ }
+
+
+35) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Model/Input.php:23    [M] PublicVisibility
+
+--- Original
++++ New
+@@ @@
+     /**
+      * @param mixed $bin
+      */
+-    public function setBin($bin) : void
++    protected function setBin($bin) : void
+     {
+         $this->bin = $bin;
+     }
+
+
+Timed Out mutants:
+==================
+
+Skipped mutants:
+================
+
+Not Covered mutants:
+====================
+
+1) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Messenger/Handler/ExchangeHandler.php:79    [M] FalseValue
+
+--- Original
++++ New
+@@ @@
+         if (!empty($data)) {
+             return is_string($data) && is_array(json_decode($data, true));
+         }
+-        return false;
++        return true;
+     }
+     private function getCountry($url, $auth, $mapping)
+     {
+
+
+2) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Services/ApiService.php:25    [M] PublicVisibility
+
+--- Original
++++ New
+@@ @@
+         $this->url = $url;
+         $this->auth = $auth;
+     }
+-    public function getData()
++    protected function getData()
+     {
+         $auth = '';
+         if ($this->auth) {
+
+
+3) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Services/ApiService.php:34    [M] Concat
+
+--- Original
++++ New
+@@ @@
+             $val = $this->auth[$key];
+             $auth = "?{$key}={$val}";
+         }
+-        return json_decode(file_get_contents($this->url . $auth), true);
++        return json_decode(file_get_contents($auth . $this->url), true);
+     }
+     /**
+      * @return string
+
+
+4) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Services/ApiService.php:34    [M] ConcatOperandRemoval
+
+--- Original
++++ New
+@@ @@
+             $val = $this->auth[$key];
+             $auth = "?{$key}={$val}";
+         }
+-        return json_decode(file_get_contents($this->url . $auth), true);
++        return json_decode(file_get_contents($auth), true);
+     }
+     /**
+      * @return string
+
+
+5) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Services/ApiService.php:34    [M] ConcatOperandRemoval
+
+--- Original
++++ New
+@@ @@
+             $val = $this->auth[$key];
+             $auth = "?{$key}={$val}";
+         }
+-        return json_decode(file_get_contents($this->url . $auth), true);
++        return json_decode(file_get_contents($this->url), true);
+     }
+     /**
+      * @return string
+
+
+6) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Services/ApiService.php:34    [M] FunctionCall
+
+--- Original
++++ New
+@@ @@
+             $val = $this->auth[$key];
+             $auth = "?{$key}={$val}";
+         }
+-        return json_decode(file_get_contents($this->url . $auth), true);
++        json_decode(file_get_contents($this->url . $auth), true);
++        return null;
+     }
+     /**
+      * @return string
+
+
+7) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Services/ApiService.php:40    [M] PublicVisibility
+
+--- Original
++++ New
+@@ @@
+     /**
+      * @return string
+      */
+-    public function getUrl() : string
++    protected function getUrl() : string
+     {
+         return $this->url;
+     }
+
+
+8) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Services/ApiService.php:48    [M] PublicVisibility
+
+--- Original
++++ New
+@@ @@
+     /**
+      * @param string $url
+      */
+-    public function setUrl(string $url) : void
++    protected function setUrl(string $url) : void
+     {
+         $this->url = $url;
+     }
+
+
+9) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Services/ApiService.php:56    [M] PublicVisibility
+
+--- Original
++++ New
+@@ @@
+     /**
+      * @return mixed|null
+      */
+-    public function getAuth()
++    protected function getAuth()
+     {
+         return $this->auth;
+     }
+
+
+10) /home/romans/Public/projects/TestSymfonyProject/src/Bundle/TestBundle/Services/ApiService.php:64    [M] PublicVisibility
+
+--- Original
++++ New
+@@ @@
+     /**
+      * @param mixed|null $auth
+      */
+-    public function setAuth($auth) : void
++    protected function setAuth($auth) : void
+     {
+         $this->auth = $auth;
+     }
+ }

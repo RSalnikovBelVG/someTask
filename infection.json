@@ -1,0 +1,19 @@
+{
+    "$schema": "https://raw.githubusercontent.com/infection/infection/0.26.6/resources/schema.json",
+    "source": {
+        "directories": [
+            "src"
+        ],
+        "excludes": [
+            "Bundle/TestBundle/Resources",
+            "Bundle/TestBundle/Command",
+            "Bundle/TestBundle/DependencyInjection"
+        ]
+    },
+    "logs": {
+        "text": "./infection-logs.txt"
+    },
+    "mutators": {
+        "@default": true
+    }
+}

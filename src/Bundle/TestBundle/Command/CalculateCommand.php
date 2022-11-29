@@ -8,9 +8,11 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\HandlerFailedException;
 use Symfony\Component\Messenger\HandleTrait;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 
 class CalculateCommand extends Command
 {
@@ -39,9 +41,10 @@ class CalculateCommand extends Command
     {
         $exchangeMessage = new ExchangeMessage();
         $exchangeMessage->setFileName($input->getArgument('file'));
+
         try {
-            $busResults = $this->handle($exchangeMessage);
-        } catch (HandlerFailedException $exception) {
+            $busResults = $this->handle(Envelope::wrap($exchangeMessage));
+        } catch (HandlerFailedException|NoSuchPropertyException $exception) {
             $output->writeln('<error>Wrong mapping or properties</error>');
             return Command::FAILURE;
         }

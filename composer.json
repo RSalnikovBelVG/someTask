@@ -19,7 +19,10 @@
     },
     "require-dev": {
         "codeception/codeception": "^4.2",
-        "codeception/module-symfony": "^2.1"
+        "codeception/module-asserts": "^2.0",
+        "codeception/module-phpbrowser": "^2.0",
+        "codeception/module-symfony": "^2.1",
+        "infection/codeception-adapter": "^0.4.1"
     },
     "config": {
         "allow-plugins": {

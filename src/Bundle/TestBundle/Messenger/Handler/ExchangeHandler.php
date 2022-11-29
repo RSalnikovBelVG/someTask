@@ -10,6 +10,7 @@ use App\Bundle\TestBundle\Services\CalculateService;
 use App\Bundle\TestBundle\Services\RatesService;
 use JsonException;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -24,22 +25,26 @@ class ExchangeHandler
      */
     private $calculateService;
 
+    private $binService;
+    private $ratesService;
+
     public function __construct(CalculateService $calculateService)
     {
         $this->calculateService = $calculateService;
+        $this->setBinService(new BinService());
+        $this->setRatesService(new RatesService());
     }
 
     public function __invoke(ExchangeMessage $arg)
     {
         $filename = $arg->getFileName();
-        if (!file_exists($filename) && is_readable($filename)) throw new FileNotFoundException();
+        if (!file_exists($filename) && !is_readable($filename)) throw new FileNotFoundException();
 
         $file = file_get_contents($filename);
         $serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
 
         $array = explode(PHP_EOL, $file);
         $calcParams = $this->calculateService->getParams();
-        $propertyAccessor = new PropertyAccessor();
         $rateArr = [];
         foreach ($array as $key => $val) {
             if (!$this->json_validator($val) || json_last_error() > JSON_ERROR_NONE) throw new JsonException('JSON: ' . json_last_error_msg());
@@ -48,17 +53,17 @@ class ExchangeHandler
             $input = $serializer->denormalize($json, Input::class, 'json');
 
             $binProvider = $calcParams['bins_provider'];
-            $binService = new BinService($binProvider['url'] . '/' . $input->getBin(), $binProvider['auth']);
-            $country = $propertyAccessor->getValue($binService->getData(), $binProvider['mapping']);
+            $country = $this->getCountry($binProvider['url'] . '/' . $input->getBin(), $binProvider['auth'], $binProvider['mapping']);
+            if (!$country) throw new NoSuchPropertyException();
 
             $ratesProvider = $calcParams['rates_provider'];
-            $ratesService = new RatesService($ratesProvider['url'], $ratesProvider['auth']);
-            $rates = $propertyAccessor->getValue($ratesService->getData(), $ratesProvider['mapping']);
+            $rates = $this->getRates($ratesProvider['url'], $ratesProvider['auth'], $ratesProvider['mapping']);
+            if (!$rates) throw new NoSuchPropertyException();
 
             $currency = $input->getCurrency();
             $amount = $input->getAmount();
             $isEU = CalculateService::isCountryEU($country);
-            if ($currency !== $ratesProvider['currency'] || $rates[$currency] > 0) $amount /= $rates[$currency];
+            if ($currency !== $ratesProvider['currency'] || array_search($currency, $rates, true) > 0) $amount /= $rates[$currency];
 
             $rateArr[$key] = $this->calcEURates($amount, $isEU);
         }
@@ -72,6 +77,56 @@ class ExchangeHandler
             return (is_string($data) && is_array(json_decode($data, true)));
         }
         return false;
+    }
+
+    private function getCountry($url, $auth, $mapping)
+    {
+        $binService = $this->getBinService();
+        $binService->setUrl($url);
+        $binService->setAuth($auth);
+
+        return (new PropertyAccessor())->getValue($binService->getData(), $mapping);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBinService()
+    {
+        return $this->binService;
+    }
+
+    /**
+     * @param mixed $binService
+     */
+    public function setBinService($binService): void
+    {
+        $this->binService = $binService;
+    }
+
+    private function getRates($url, $auth, $mapping)
+    {
+        $ratesService = $this->getRatesService();
+        $ratesService->setUrl($url);
+        $ratesService->setAuth($auth);
+
+        return (new PropertyAccessor())->getValue($ratesService->getData(), $mapping);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRatesService()
+    {
+        return $this->ratesService;
+    }
+
+    /**
+     * @param mixed $ratesService
+     */
+    public function setRatesService($ratesService): void
+    {
+        $this->ratesService = $ratesService;
     }
 
     private function calcEURates($amount, bool $isEU = false)

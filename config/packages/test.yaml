@@ -4,7 +4,7 @@ test:
     mapping: '[rates]'
     auth:
       access_key: 'key'
-    currency: 'BYN'
+    currency: 'EUR'
   bins_provider:
     url: https://lookup.binlist.net
     mapping: '[country][alpha2]'

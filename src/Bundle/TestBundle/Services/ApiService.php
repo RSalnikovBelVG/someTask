@@ -14,11 +14,12 @@ abstract class ApiService
      */
     private $auth;
 
-    public function __construct(string $url, $auth = null)
+    public function __construct(string $url = '', $auth = null)
     {
         $this->url = $url;
         $this->auth = $auth;
     }
+
 
 
     public function getData()
@@ -31,5 +32,37 @@ abstract class ApiService
         }
 
         return json_decode(file_get_contents($this->url . $auth), true);
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl(): string
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param string $url
+     */
+    public function setUrl(string $url): void
+    {
+        $this->url = $url;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getAuth()
+    {
+        return $this->auth;
+    }
+
+    /**
+     * @param mixed|null $auth
+     */
+    public function setAuth($auth): void
+    {
+        $this->auth = $auth;
     }
 }
