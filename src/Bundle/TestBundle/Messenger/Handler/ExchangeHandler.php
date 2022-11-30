@@ -65,14 +65,23 @@ class ExchangeHandler
             $amount = $input->getAmount();
             $isEU = CalculateService::isCountryEU($country);
 
-            if ($currency !== $ratesProvider['currency'] || array_search($currency, $rates, true) > 0){
-                $amount /= $rates[$currency] ?? 0;
+            if ($currency !== $ratesProvider['currency'] || array_search($currency, $rates, true) > 0) {
+                $amount = $this->amount($amount, $rates[$currency]);
             }
 
             $rateArr[$key] = $this->calcEURates($amount, $isEU);
         }
 
         return $rateArr;
+    }
+
+    public function amount($amount, $rates)
+    {
+        try {
+            return bcdiv((string)$amount, (string)$rates);
+        } catch (\DivisionByZeroError $exception) {
+            return 0;
+        }
     }
 
     private function json_validator($data)

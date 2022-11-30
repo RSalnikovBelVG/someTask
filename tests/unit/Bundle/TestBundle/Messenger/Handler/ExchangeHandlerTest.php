@@ -97,7 +97,6 @@ class ExchangeHandlerTest extends Unit
         $exchangeHandler($exchangeMessage);
     }
 
-
     protected function setUp(): void
     {
         $this->binService = $this->createMock(BinService::class);

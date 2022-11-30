@@ -45,6 +45,7 @@ class CalculateCommand extends Command
         try {
             $busResults = $this->handle(Envelope::wrap($exchangeMessage));
         } catch (HandlerFailedException|NoSuchPropertyException $exception) {
+            dump($exception);
             $output->writeln('<error>Wrong mapping or properties</error>');
             return Command::FAILURE;
         }
